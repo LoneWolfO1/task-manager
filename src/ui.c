@@ -26,7 +26,7 @@ void menu_principal(Pasta **head_pastas){
     curs_set(0);
     keypad(stdscr, TRUE);
 
-    char *opcoes[] = {"Criar Pasta", "Sair"};
+    char *opcoes[] = {"Create Folder", "Exit"};
     int selecionado = 0;
 
     while (1) {
@@ -99,11 +99,11 @@ void menu_principal(Pasta **head_pastas){
                 //ui_indice = 0;
                 task_manager_titulo();
                 
-                mvwprintw(prompt,2, 1, "Nome da pasta: ");
+                mvwprintw(prompt,2, 1, " Folder Name: ");
                 
                 refresh();
                 wrefresh(prompt);
-                wgetnstr(prompt,nome, 22); // lê a string
+                wgetnstr(prompt,nome, 23); // lê a string
                 insere_pasta(head_pastas,nome);
                 noecho();         // volta a esconder
                 curs_set(0);
