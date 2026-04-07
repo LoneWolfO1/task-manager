@@ -1,0 +1,4 @@
+*.o
+taskmanager
+debug.log
+README.mdgit
