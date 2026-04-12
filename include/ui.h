@@ -6,9 +6,9 @@
 
 
 
-void imprime_Pastas(Pasta *head,int indices);
-void task_manager_titulo();
+void imprime_pastas(Pasta *head,int indices);
+int task_manager_titulo();
 void menu_principal(Pasta **head_pastas);
-
+void menu_pasta(Pasta *pasta);
 
 #endif 

@@ -4,8 +4,13 @@
 
 #define tamanho 256
 
+typedef enum {
+    INICIOU,
+    TERMINA
+} TipoData;
 
 typedef struct {
+    TipoData tipo;
     int dia;
     int mes;
     int ano;
@@ -17,6 +22,7 @@ typedef struct Tarefa{
     char titulo[tamanho];
     Data data;
     int  estado;
+    char descrisao[512];
 }Tarefa;
 
 Tarefa *cria_tarefa(char *titulo, Data data);
