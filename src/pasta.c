@@ -38,8 +38,8 @@ void insere_pasta(Pasta **head,char *nome){
     *head = nova_p;
 }
 
-void insere_tarefa_na_pasta(Pasta *p ,char *titulo ,Data d ){
-    Tarefa *nova_t = cria_tarefa(titulo,d);
+void insere_tarefa_na_pasta(Pasta *p ,char *titulo ,Data d ,char *desc){
+    Tarefa *nova_t = cria_tarefa(titulo,d,desc);
     nova_t->nextTarefa = p->head;
     p->head = nova_t;
     p->size++;

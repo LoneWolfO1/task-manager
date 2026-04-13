@@ -25,7 +25,7 @@ typedef struct Tarefa{
     char descrisao[512];
 }Tarefa;
 
-Tarefa *cria_tarefa(char *titulo, Data data);
+Tarefa *cria_tarefa(char *titulo, Data data, char *desc);
 void check_tarefa(Tarefa *t);
 void apaga_tarefa(Tarefa **head, int id);
 

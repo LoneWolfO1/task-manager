@@ -5,12 +5,13 @@
 
 static int proximo_id = 1;
 
-Tarefa *cria_tarefa(char *titulo ,Data data ){
+Tarefa *cria_tarefa(char *titulo ,Data data ,char *desc){
     Tarefa *t = malloc(sizeof(Tarefa));
     t->nextTarefa = NULL; 
     t->id = proximo_id++;
     strcpy(t->titulo, titulo);
     t->data = data;
+    strcpy(t->descrisao, desc); 
     return t;
 }
 

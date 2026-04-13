@@ -14,21 +14,38 @@ int task_manager_titulo(){
     mvprintw(ui_indice++, 0, " / / | (_| \\__ \\   <  / /\\/\\ \\ (_| | | | | (_| | (_| |  __/ |   ");
     mvprintw(ui_indice++, 0, " \\/   \\__,_|___/_|\\_\\ \\/    \\/\\__,_|_| |_|\\__,_|\\__, |\\___|_|   ");
     mvprintw(ui_indice++, 0, "                                                |___/           ");
-    mvprintw(ui_indice++, 0, "________________________________________________________________");
-    mvprintw(ui_indice++, 0, "________________________________________________________________");
-    ui_indice++;
+    mvhline(ui_indice++, 0, ACS_HLINE, COLS);
+    mvhline(ui_indice++, 0, ACS_HLINE, COLS);
+    
     return ui_indice;
+}
+void draw_wrapped_text(){
+    
+}
+
+void tarefa_ui(int linha , int coluna, int largura, int altura , char nome[], Data data, char descricao[]){
+    //FILE *log = fopen("debug3.log", "a");
+    //fprintf(log, "tarefa_ui: linha=%d, coluna=%d, largura=%d, altura=%d\n", linha, coluna, largura, altura);
+    //fclose(log);
+    WINDOW *tarefa_win = newwin(altura, largura, linha, coluna);
+    box(tarefa_win, 0, 0);
+
+    mvprintw(linha + 1,coluna +1 ,"Name: %s" , nome);
+    mvprintw(linha + 3, coluna +1,"Description: %s", descricao);
+    wrefresh(tarefa_win);
+    delwin(tarefa_win);
 }
 
 void prompt_criar_tarefa(Pasta *pasta) {
     int win_altura = 10;
     int win_largura = 40;
     int win_y = (LINES - win_altura) / 2;
-    int win_x = (COLS - win_largura) / 2;
-    WINDOW *prompt = newwin(win_altura, win_largura, win_y, win_x);
+    int win_x = (COLS - win_largura) / 10;
+    WINDOW *prompt = newwin(win_altura , win_largura , win_y, win_x);
     
-    char titulo[32];
+    char titulo[22];
     int dia, mes, ano;
+    char descricao[1024];
     
     echo();
     curs_set(1);
@@ -37,23 +54,38 @@ void prompt_criar_tarefa(Pasta *pasta) {
     // pede título
     mvwprintw(prompt, 2, 1, " Task Name: ");
     wrefresh(prompt);
-    wgetnstr(prompt, titulo, 31);
+    wgetnstr(prompt, titulo, 22);
     
+
     // pede data
+    
+    
+    char two[3];
     mvwprintw(prompt, 3, 1, " Day: ");
     wrefresh(prompt);
-    wscanw(prompt, "%d", &dia);
+    wgetnstr(prompt, two, 2);
+    dia = atoi(two);
     
     mvwprintw(prompt, 4, 1, " Month: ");
     wrefresh(prompt);
-    wscanw(prompt, "%d", &mes);
+    wgetnstr(prompt, two, 2);
+    mes = atoi(two);
     
+    char tree[5];
     mvwprintw(prompt, 5, 1, " Year: ");
     wrefresh(prompt);
-    wscanw(prompt, "%d", &ano);
-    
+    wgetnstr(prompt, tree, 4);
+    ano = atoi(tree);
+
     Data d = {dia, mes, ano};
-    insere_tarefa_na_pasta(pasta, titulo, d);
+
+    char desc[512];
+    //para isto ficar 100% tenho de implementar wrapping..
+    mvwprintw(prompt, 6, 1, " Desciption: ");
+    wrefresh(prompt);
+    wgetnstr(prompt, desc, 100);
+
+    insere_tarefa_na_pasta(pasta, titulo, d, desc);
     
     noecho();
     curs_set(0);
@@ -90,21 +122,25 @@ void menu_pasta(Pasta *pasta){
         , num_tarefas, num_opcoes, selecionado);
         fclose(log);
         
+        refresh();
+
         for (int i = 0; i < num_opcoes; i++) {
-            if (i < num_tarefas) {
+            if (i == 0) {
                 if (i == selecionado)
-                    mvprintw(i + ui_indice,1, " > %s", tarefas_arr[i]->titulo);
+                    mvprintw(ui_indice ,1, " > %s", opcoes[0]);
                 else
-                    mvprintw(i + ui_indice,1, " %s", tarefas_arr[i]->titulo);
+                    mvprintw(ui_indice ,1, " %s",  opcoes[0]);
             } else {
                 if (i == selecionado)
-                    mvprintw(i + ui_indice,1, " > %s", opcoes[i - num_tarefas]);
+                    //mvprintw(ui_indice + i,1, " > %s", tarefas_arr[i - 1]->titulo);
+                    tarefa_ui(ui_indice + 1 + (i-1) * 10, 2, 80, 10,tarefas_arr[i-1]->titulo,tarefas_arr[i-1]->data,tarefas_arr[i-1]->descrisao);
                 else
-                    mvprintw(i + ui_indice,1, " %s", opcoes[i - num_tarefas]);
+                    //mvprintw( ui_indice + i,1, " %s", tarefas_arr[i - 1]->titulo);
+                    tarefa_ui(ui_indice + 1 + (i-1) * 10, 1, 80, 10,tarefas_arr[i-1]->titulo,tarefas_arr[i-1]->data,tarefas_arr[i-1]->descrisao);
             } 
         }
-        refresh(); // atualiza o ecrã (como um flush)
-        //wrefresh(win);
+         // atualiza o ecrã (como um flush)
+        
 
         int tecla = getch();
         if (tecla == KEY_UP && selecionado > 0) {
@@ -113,12 +149,15 @@ void menu_pasta(Pasta *pasta){
             selecionado++;
         } else if (tecla == 27) { // ESC para voltar
             break;
-        } else if(tecla == '\n' && selecionado == num_tarefas){
+        } else if(tecla == '\n' && selecionado == 0){
             prompt_criar_tarefa(pasta);
         }
+        
     }
     
 }
+
+
 
 void menu_principal(Pasta **head_pastas){
     initscr();
@@ -186,10 +225,10 @@ void menu_principal(Pasta **head_pastas){
             if (selecionado == 1 + num_pastas) {
                 break;
             }else if (selecionado == num_pastas){
-                int win_altura = 5;
+                int win_altura = 10;
                 int win_largura = 40;
                 int win_y = (LINES - win_altura) / 2;
-                int win_x = (COLS - win_largura) / 2;
+                int win_x = (COLS - win_largura) / 10;
                 WINDOW *prompt = newwin(win_altura, win_largura, win_y, win_x);
                 box(prompt, 0, 0);
 
@@ -215,6 +254,7 @@ void menu_principal(Pasta **head_pastas){
                 
             }
         }
+        delwin(win);
 
     }
 

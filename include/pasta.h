@@ -13,7 +13,7 @@ typedef struct Pasta {
 Pasta *cria_pasta(char *nome);
 void apaga_pasta(Pasta **head,char *nome);
 void insere_pasta(Pasta **head,char *nome);
-void insere_tarefa_na_pasta(Pasta *p ,char *titulo ,Data d );
+void insere_tarefa_na_pasta(Pasta *p ,char *titulo ,Data d , char *desc);
 int conta_pastas(Pasta *head);
 
 
